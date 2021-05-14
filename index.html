@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO awesome</title>
+    <script
+      src="https://kit.fontawesome.com/a4d32e6c65.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="shortcut icon" href="./img/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body onload="initInfo(); loadTagList()">
+    <div class="wrapper">
+      <header>
+        <div class="header-title">
+          <h1>Let's plan your <span>awesome</span> day!</h1>
+        </div>
+        <div class="header-buttons-group">
+          <div class="search">
+            <input
+              class="search-input"
+              type="text"
+              placeholder="Type to search..."
+            />
+            <a class="search-btn" href="#"><i class="fas fa-search"></i></a>
+          </div>
+          <div class="dark-mode-container">
+            <input
+              type="checkbox"
+              class="dark-mode-checkbox"
+              id="dark-mode-checkbox"
+            />
+            <label for="dark-mode-checkbox" class="dark-mode-label">
+              <i class="fas fa-moon"></i>
+              <i class="fas fa-sun"></i>
+              <div class="switch-circle"></div>
+            </label>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <div class="dashboard">
+          <div class="info">
+            <div class="date-info">
+              <h3 id="date">April, 28</h3>
+            </div>
+            <div class="day-info">
+              <h3 id="weekday">Wednesday</h3>
+            </div>
+            <div class="time-info">
+              <h3 id="time">18:15</h3>
+            </div>
+            <div class="tasks-info">
+              <p>You have <span>3</span> tasks</p>
+            </div>
+          </div>
+          <div class="add-task">
+            <button data-modal-target="#modal" class="add-btn">
+              + add new task
+            </button>
+          </div>
+          <div class="tags-container">
+            <div class="add-tag">
+              <input
+                class="add-tag-input"
+                type="text"
+                placeholder="add tag..."
+              />
+            </div>
+            <div class="tag-list">
+              <!--  Динамический вывод тегов -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="notes">
+          <!--  Динамический вывод заметок -->
+        </div>
+      </main>
+    </div>
+    <!-- Modal Window -->
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <input class="add-title-input" type="text" placeholder="Title..." />
+        <button class="pin-note-btn">
+          <i class="fas fa-thumbtack"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <textarea
+          class="add-note-input"
+          cols="35"
+          rows="7"
+          placeholder="Note..."
+        ></textarea>
+        <div class="modal-tags-container">
+          <!--  Динамический вывод тегов -->
+        </div>
+        <button class="add-btn">save new note</button>
+      </div>
+    </div>
+    <div id="modal-overlay"></div>
+
+    <!-- JS scripts -->
+    <script src="./main.js"></script>
+    <script src="./js/info.js"></script>
+    <script src="./js/modal.js"></script>
+    <script src="./js/dark_mode.js"></script>
+  </body>
+</html>
