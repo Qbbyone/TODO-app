@@ -198,12 +198,13 @@ main {
   color: rgb(85, 84, 84);
 }
 
-.tasks-info {
+.tasks-info p,
+.tasks-info .tasks {
   font-size: 1.5rem;
   color: var(--text-clr);
 }
 
-.tasks-info span {
+.tasks-info .task-number {
   font-size: 1.85rem;
   color: rgb(231, 108, 36);
 }
@@ -303,6 +304,14 @@ main {
   padding: 0.5rem;
   font-size: 1.05rem;
   color: var(--icon-clr);
+}
+
+.pin-active {
+  background: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: 1.05rem;
+  color: rgb(31, 160, 63);
 }
 
 .note-tags {
