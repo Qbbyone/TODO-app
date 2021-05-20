@@ -1,6 +1,3 @@
-noteArray = [];
-tagsArray = [];
-
 // Server
 const ipAdress = "https://the-best-todoshnik.herokuapp.com";
 const token = "DLooBUSHZYOI5rnWgR_oOyX892cq5xZX";
@@ -12,7 +9,38 @@ const noteList = document.querySelector(".notes");
 const noteTitleInput = document.querySelector(".add-title-input");
 const noteInput = document.querySelector(".add-note-input");
 const addNoteButton = document.getElementById("add-note-btn");
-const taskNumber = document.querySelector('.task-number')
+const taskNumber = document.querySelector(".task-number");
+const tasksString = document.querySelector(".tasks");
+
+function applyData(data) {
+  if (Array.isArray(data)) {
+    updateTaskNumber(data);
+    clearNoteList();
+    data.map((noteItem) => {
+      createNote(noteItem);
+    });
+  } else {
+    clearTagList();
+    clearNoteList();
+    data.tagList.map((tagItem) => {
+      createTag(tagItem);
+    });
+    updateTaskNumber(data.noteList.length);
+    data.noteList.map((noteItem) => {
+      createNote(noteItem);
+    });
+  }
+}
+
+function updateTaskNumber(data) {
+  let number = data.length;
+  taskNumber.innerText = number;
+  if (number == 1) {
+    tasksString.innerText = " task";
+  } else {
+    tasksString.innerText = " tasks";
+  }
+}
 
 // loading
 
@@ -21,22 +49,18 @@ function loadTagList() {
   fetch(url)
     .then((res) => res.json())
     .then((el) => {
-      tagsArray = el;
-      tagsArray.map((item) => {
+      el.map((item) => {
         createTag(item);
       });
     });
 }
 
-
 function loadNoteList() {
   const url = `${ipAdress}/loadNoteList?token=${token}`;
   fetch(url)
     .then((res) => res.json())
-    .then((el) => {
-      el.map((item) => {
-        createNote(item);
-      });
+    .then((data) => {
+      applyData(data);
     });
 }
 
@@ -60,10 +84,14 @@ function createTag(tagItem) {
 
 function clearTagList() {
   tagList.innerHTML = "";
-} 
+}
 
 tagInput.addEventListener("keyup", (e) => {
-  if (e.key === "Enter" && tagInput.value.length > 1 && tagInput.value.length < 19) {
+  if (
+    e.key === "Enter" &&
+    tagInput.value.length > 1 &&
+    tagInput.value.length < 19
+  ) {
     addTags();
   }
 });
@@ -84,11 +112,7 @@ function addTags() {
   })
     .then((response) => response.json())
     .then((data) => {
-      clearTagList();
-      console.log(data);
-      data.tagList.map((tagItem) => {
-        createTag(tagItem);
-      });
+      applyData(data);
     });
   tagInput.value = "";
 }
@@ -100,17 +124,18 @@ function deleteTag(tagId) {
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
-      clearTagList();
-      data.tagList.map((tagItem) => {
-        createTag(tagItem);
-      });
+      applyData(data);
     });
 }
 
 // Notes
 
 addNoteButton.addEventListener("click", () => {
-  if (noteTitleInput.value.length > 1 && noteInput.value.length > 1) {
+  if (
+    noteTitleInput.value.length > 1 &&
+    noteInput.value.length > 1 &&
+    noteInput.value.length < 499
+  ) {
     addNote();
   }
 });
@@ -122,6 +147,7 @@ function createNote(noteItem) {
   //create note body
   const noteDiv = document.createElement("div");
   noteDiv.setAttribute("class", "note");
+
   //create note header
   const noteHeaderDiv = document.createElement("div");
   noteHeaderDiv.setAttribute("class", "note-header");
@@ -137,16 +163,24 @@ function createNote(noteItem) {
   const noteButtonsDiv = document.createElement("div");
   noteButtonsDiv.setAttribute("class", "buttons-container");
   noteHeaderDiv.appendChild(noteButtonsDiv);
+
   // pin button
   const pinButton = document.createElement("button");
   pinButton.innerHTML = `<i class="fas fa-thumbtack"></i>`;
-  pinButton.setAttribute("class", "pin-note-btn");
+  pinButton.addEventListener("click", pinNote.bind(null, noteItem.id));
+  if (noteItem.isPinned) {
+    pinButton.classList.add("pin-active");
+  } else {
+    pinButton.classList.add("pin-note-btn");
+  }
   noteButtonsDiv.appendChild(pinButton);
+
   //edit button
   const editButton = document.createElement("button");
   editButton.innerHTML = `<i class="fas fa-edit"></i>`;
   editButton.setAttribute("class", "edit-note-btn");
   noteButtonsDiv.appendChild(editButton);
+
   //delete button
   const deleteButton = document.createElement("button");
   deleteButton.addEventListener("click", deleteNote.bind(null, noteItem.id));
@@ -189,11 +223,7 @@ function addNote() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data.length);
-      clearNoteList();
-      data.map((noteItem) => {
-        createNote(noteItem);
-      });
+      applyData(data);
     });
 
   noteTitleInput.value = "";
@@ -206,12 +236,18 @@ function deleteNote(deleteId) {
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
-      clearNoteList();
-      data.map((todoItem) => {
-        createNote(todoItem);
-      });
+      applyData(data);
     });
 }
 
-// tasks info 
+function pinNote(pinId) {
+  const pinItemId = pinId;
+  const url = `${ipAdress}/pinNote?searchQuery=&id=${pinItemId}`;
+  fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+      applyData(data);
+    });
+}
 
+// tasks info
