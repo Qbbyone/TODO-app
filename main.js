@@ -2,15 +2,25 @@
 const ipAdress = "https://the-best-todoshnik.herokuapp.com";
 const token = "DLooBUSHZYOI5rnWgR_oOyX892cq5xZX";
 
-//TAGS
+//tags
 const tagInput = document.querySelector(".add-tag-input");
 const tagList = document.querySelector(".tag-list");
+//notes
 const noteList = document.querySelector(".notes");
 const noteTitleInput = document.querySelector(".add-title-input");
 const noteInput = document.querySelector(".add-note-input");
 const addNoteButton = document.getElementById("add-note-btn");
+//info
 const taskNumber = document.querySelector(".task-number");
 const tasksString = document.querySelector(".tasks");
+//search
+const searchInput = document.querySelector(".search-input");
+const searchButton = document.querySelector(".search-btn");
+
+searchButton.addEventListener('click', ()=> {
+  searchInput.classList.toggle('hidden')
+})
+
 
 function applyData(data) {
   if (Array.isArray(data)) {
@@ -98,7 +108,7 @@ tagInput.addEventListener("keyup", (e) => {
 
 function addTags() {
   const tagTitle = tagInput.value;
-  const url = `${ipAdress}/addTag?searchQuery=`;
+  const url = `${ipAdress}/addTag?searchQuery=${searchInput.value}`;
 
   const tagType = {
     name: tagTitle,
@@ -119,7 +129,7 @@ function addTags() {
 
 function deleteTag(tagId) {
   const deleteTagId = tagId;
-  const url = `${ipAdress}/deleteTag?searchQuery=&id=${deleteTagId}`;
+  const url = `${ipAdress}/deleteTag?searchQuery=${searchInput.value}&id=${deleteTagId}`;
 
   fetch(url)
     .then((res) => res.json())
@@ -207,7 +217,7 @@ function clearNoteList() {
 function addNote() {
   const noteTitle = noteTitleInput.value;
   const noteDescription = noteInput.value;
-  const url = `${ipAdress}/addNote?searchQuery=`;
+  const url = `${ipAdress}/addNote?searchQuery=${searchInput.value}`;
 
   const noteBody = {
     title: noteTitle,
@@ -232,7 +242,7 @@ function addNote() {
 
 function deleteNote(deleteId) {
   const deleteNoteId = deleteId;
-  const url = `${ipAdress}/deleteNote?searchQuery=&id=${deleteNoteId}`;
+  const url = `${ipAdress}/deleteNote?searchQuery=${searchInput.value}&id=${deleteNoteId}`;
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
@@ -242,7 +252,7 @@ function deleteNote(deleteId) {
 
 function pinNote(pinId) {
   const pinItemId = pinId;
-  const url = `${ipAdress}/pinNote?searchQuery=&id=${pinItemId}`;
+  const url = `${ipAdress}/pinNote?searchQuery=${searchInput.value}&id=${pinItemId}`;
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
@@ -250,4 +260,24 @@ function pinNote(pinId) {
     });
 }
 
-// tasks info
+// search
+
+searchInput.addEventListener("keyup", (e) => {
+  if (
+    e.key === "Enter" &&
+    searchInput.value.length > 1 &&
+    searchInput.value.length < 30
+  ) {
+    searchNote();
+  }
+})
+
+function searchNote() {
+  const url = `${ipAdress}/searchNote?searchQuery=${searchInput.value}&token=${token}`;
+  fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+      applyData(data);
+    })
+}
+
