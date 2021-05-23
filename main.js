@@ -262,10 +262,9 @@ function pinNote(pinId) {
 
 // search
 
-searchInput.addEventListener("keyup", (e) => {
+searchInput.addEventListener("input", () => {
   if (
-    e.key === "Enter" &&
-    searchInput.value.length > 1 &&
+    searchInput.value.length > 0 &&
     searchInput.value.length < 30
   ) {
     searchNote();

@@ -381,3 +381,10 @@ main {
   opacity: 1;
   pointer-events: all;
 }
+
+.remaining-symbols {
+  text-align: right;
+  padding: 1rem 2rem 0 0;
+  font-size: .85rem;
+  color: var(--text-clr);
+}  
