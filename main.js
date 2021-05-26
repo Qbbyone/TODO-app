@@ -2,14 +2,16 @@
 const ipAdress = "https://the-best-todoshnik.herokuapp.com";
 const token = "DLooBUSHZYOI5rnWgR_oOyX892cq5xZX";
 
+let pinButtonIsPinned = false;
+
 //tags
 const tagInput = document.querySelector(".add-tag-input");
 const tagList = document.querySelector(".tag-list");
 //notes
 const noteList = document.querySelector(".notes");
-const noteTitleInput = document.querySelector(".add-title-input");
-const noteInput = document.querySelector(".add-note-input");
+
 const addNoteButton = document.getElementById("add-note-btn");
+const pinNoteButton = document.querySelector(".pin-note-btn");
 //info
 const taskNumber = document.querySelector(".task-number");
 const tasksString = document.querySelector(".tasks");
@@ -17,10 +19,9 @@ const tasksString = document.querySelector(".tasks");
 const searchInput = document.querySelector(".search-input");
 const searchButton = document.querySelector(".search-btn");
 
-searchButton.addEventListener('click', ()=> {
-  searchInput.classList.toggle('hidden')
-})
-
+searchButton.addEventListener("click", () => {
+  searchInput.classList.toggle("hidden");
+});
 
 function applyData(data) {
   if (Array.isArray(data)) {
@@ -140,16 +141,6 @@ function deleteTag(tagId) {
 
 // Notes
 
-addNoteButton.addEventListener("click", () => {
-  if (
-    noteTitleInput.value.length > 1 &&
-    noteInput.value.length > 1 &&
-    noteInput.value.length < 499
-  ) {
-    addNote();
-  }
-});
-
 function createNote(noteItem) {
   const title = noteItem.title;
   const description = noteItem.description;
@@ -187,8 +178,9 @@ function createNote(noteItem) {
 
   //edit button
   const editButton = document.createElement("button");
-  editButton.innerHTML = `<i class="fas fa-edit"></i>`;
+  editButton.innerHTML = `<i class="fas fa-pen"></i>`;
   editButton.setAttribute("class", "edit-note-btn");
+  editButton.addEventListener("click", openModal.bind(null, noteItem));
   noteButtonsDiv.appendChild(editButton);
 
   //delete button
@@ -223,7 +215,7 @@ function addNote() {
     title: noteTitle,
     description: noteDescription,
     userToken: token,
-    isPinned: false,
+    isPinned: pinButtonIsPinned,
     activeTagsArray: [],
   };
 
@@ -236,8 +228,7 @@ function addNote() {
       applyData(data);
     });
 
-  noteTitleInput.value = "";
-  noteInput.value = "";
+  closeModal();
 }
 
 function deleteNote(deleteId) {
@@ -250,6 +241,8 @@ function deleteNote(deleteId) {
     });
 }
 
+// pin note
+
 function pinNote(pinId) {
   const pinItemId = pinId;
   const url = `${ipAdress}/pinNote?searchQuery=${searchInput.value}&id=${pinItemId}`;
@@ -260,16 +253,37 @@ function pinNote(pinId) {
     });
 }
 
+// edit note
+
+function editNote(newNoteBody) {
+  console.log(newNoteBody);
+  const url = `${ipAdress}/editNote?searchQuery=${searchInput.value}`;
+
+  const newNote = {
+    id: newNoteBody.id,
+    title: noteTitleInput.value,
+    description: noteInput.value,
+    userToken: token,
+    activeTagsArray: [],
+    isPinned: pinButtonIsPinned,
+  };
+
+  fetch(url, {
+    method: "POST",
+    body: JSON.stringify(newNote),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      applyData(data);
+    });
+  closeModal();
+}
+
 // search
 
 searchInput.addEventListener("input", () => {
-  if (
-    searchInput.value.length > 0 &&
-    searchInput.value.length < 30
-  ) {
-    searchNote();
-  }
-})
+  searchNote();
+});
 
 function searchNote() {
   const url = `${ipAdress}/searchNote?searchQuery=${searchInput.value}&token=${token}`;
@@ -277,6 +291,5 @@ function searchNote() {
     .then((res) => res.json())
     .then((data) => {
       applyData(data);
-    })
+    });
 }
-

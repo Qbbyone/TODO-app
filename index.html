@@ -55,11 +55,11 @@
               <h3 id="time">18:15</h3>
             </div>
             <div class="tasks-info">
-              <p>You have <span class="task-number">3</span><span class="tasks"></span></p>
+              <p>You have <span class="task-number">0</span><span class="tasks"> tasks</span></p>
             </div>
           </div>
           <div class="add-task">
-            <button data-modal-target="#modal" class="add-btn">
+            <button id="open-modal-button" class="add-btn">
               + add new task
             </button>
           </div>
@@ -98,11 +98,11 @@
           rows="7"
           placeholder="Note..."
         ></textarea>
-        <div class="remaining-symbols">300 characters remaining</div>
+        <div class="remaining-symbols"></div>
         <div class="modal-tags-container">
           <!--  Динамический вывод тегов -->
         </div>
-        <button type="submit" id="add-note-btn" class="add-btn">save new note</button>
+        <button id="add-note-btn" class="add-btn">save new note</button>
       </div>
     </div>
     <div id="modal-overlay"></div>
