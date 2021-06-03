@@ -7,6 +7,8 @@ let pinButtonIsPinned = false;
 //tags
 const tagInput = document.querySelector(".add-tag-input");
 const tagList = document.querySelector(".tag-list");
+
+
 //notes
 const noteList = document.querySelector(".notes");
 
@@ -25,18 +27,19 @@ searchButton.addEventListener("click", () => {
 
 function applyData(data) {
   if (Array.isArray(data)) {
-    updateTaskNumber(data);
+    updateTaskNumber(data.length);
     clearNoteList();
     data.map((noteItem) => {
       createNote(noteItem);
     });
   } else {
+    updateTaskNumber(data.noteList.length);
     clearTagList();
     clearNoteList();
+    tagsArr = data.tagList.slice(0);
     data.tagList.map((tagItem) => {
       createTag(tagItem);
     });
-    updateTaskNumber(data.noteList.length);
     data.noteList.map((noteItem) => {
       createNote(noteItem);
     });
@@ -44,7 +47,7 @@ function applyData(data) {
 }
 
 function updateTaskNumber(data) {
-  let number = data.length;
+  let number = data;
   taskNumber.innerText = number;
   if (number == 1) {
     tasksString.innerText = " task";
@@ -60,6 +63,7 @@ function loadTagList() {
   fetch(url)
     .then((res) => res.json())
     .then((el) => {
+      tagsArr = el.slice(0);
       el.map((item) => {
         createTag(item);
       });
@@ -82,6 +86,12 @@ function createTag(tagItem) {
   tagDiv.setAttribute("class", "tag-item");
   const tagSpan = document.createElement("span");
   tagSpan.innerHTML = tagItem.name;
+  tagSpan.addEventListener("click", changeTagStatus.bind(null, tagItem.id)); 
+  if (tagItem.active) {
+    tagDiv.classList.add("tag-item-active");
+  } 
+
+  //delete tag button
   const deleteTagBtn = document.createElement("i");
   deleteTagBtn.setAttribute("class", "fas fa-times");
   deleteTagBtn.classList.add("delete-tag-btn");
@@ -110,7 +120,6 @@ tagInput.addEventListener("keyup", (e) => {
 function addTags() {
   const tagTitle = tagInput.value;
   const url = `${ipAdress}/addTag?searchQuery=${searchInput.value}`;
-
   const tagType = {
     name: tagTitle,
     userToken: token,
@@ -132,6 +141,15 @@ function deleteTag(tagId) {
   const deleteTagId = tagId;
   const url = `${ipAdress}/deleteTag?searchQuery=${searchInput.value}&id=${deleteTagId}`;
 
+  fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+      applyData(data);
+    });
+}
+
+function changeTagStatus(tagId) {
+  const url = `${ipAdress}/changeTagStatus?searchQuery=${searchInput.value}&id=${tagId}`;
   fetch(url)
     .then((res) => res.json())
     .then((data) => {

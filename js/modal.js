@@ -3,9 +3,12 @@ const overlay = document.getElementById("modal-overlay");
 const modal = document.getElementById("modal");
 const remainingSymbols = document.querySelector(".remaining-symbols");
 const maxAmountOfSymbols = 300;
+
 const noteTitleInput = document.querySelector(".add-title-input");
 const noteInput = document.querySelector(".add-note-input");
 
+const tagModalList = document.querySelector(".modal-tags-container");
+let tagsArr;
 
 let method;
 
@@ -14,6 +17,7 @@ openModalButton.addEventListener("click", openModal.bind(null, null));
 overlay.addEventListener("click", closeModal);
 
 function openModal(data) {
+  console.log(data);
   if (data != null) {
     noteTitleInput.value = data.title;
     noteInput.value = data.description;
@@ -22,10 +26,18 @@ function openModal(data) {
       pinButtonIsPinned = true;
     }
     countChars(data.description.length);
-
+    
+    data.tagsArray.forEach((el) => {
+      createModalTag(el);
+    });
   } else {
     countChars(0);
+    console.log(tagsArr);
+    tagsArr.forEach((el) => {
+      createModalTag(el);
+    });
   }
+  
   method = chooseButtonMethod.bind(null, data);
   addNoteButton.addEventListener("click", method);
 
@@ -53,6 +65,7 @@ function closeModal() {
   //clear inputs
   noteTitleInput.value = "";
   noteInput.value = "";
+  tagModalList.innerHTML = ""
   //clear context
   pinButtonIsPinned = false;
   pinNoteButton.classList.remove("pin-active");
@@ -79,3 +92,15 @@ function pinNoteModal() {
     pinNoteButton.classList.remove("pin-active");
   }
 }
+
+function createModalTag(tagItem) {
+  const tagDiv = document.createElement("div");
+  tagDiv.setAttribute("class", "tag-item");
+  const tagSpan = document.createElement("span");
+  tagSpan.innerHTML = tagItem.name;
+  
+  
+  tagDiv.appendChild(tagSpan);
+  tagModalList.appendChild(tagDiv);
+}
+
