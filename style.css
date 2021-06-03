@@ -245,7 +245,7 @@ main {
   background: var(--tag-clr);
   border: 1px solid #ccc;
   border-radius: 3px;
-  padding: 0.4rem;
+  padding: 0.45rem;
   display: flex;
   align-items: center;
   font-size: 1.1rem;
@@ -255,7 +255,13 @@ main {
 
 .tag-item i {
   font-size: 1.1rem;
-  margin: 0 5px;
+  margin-left: 0.5rem;
+}
+
+.tag-item-active {
+  background: var(--clr-accent);
+  border: none;
+  
 }
 
 .add-tag input {
@@ -314,6 +320,10 @@ main {
   color: rgb(31, 160, 63);
 }
 
+.delete-note-btn:hover {
+  color: #ff6f47;
+}
+
 .note-tags {
   display: flex;
   margin-bottom: 0.5rem;
@@ -363,7 +373,8 @@ main {
 
 .modal-tags-container {
   display: flex;
-  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  margin: 1rem 0rem;
 }
 
 #modal-overlay {
@@ -388,3 +399,4 @@ main {
   font-size: .85rem;
   color: var(--text-clr);
 }  
+
