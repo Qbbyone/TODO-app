@@ -1,5 +1,9 @@
-// Server
-const ipAdress = "https://the-best-todoshnik.herokuapp.com";
+// Remote server 
+//const ipAdress = "https://the-best-todoshnik.herokuapp.com";
+
+// local server
+const ipAdress = "http://192.168.0.103:8082";
+
 const token = "DLooBUSHZYOI5rnWgR_oOyX892cq5xZX";
 
 let pinButtonIsPinned = false;
@@ -7,7 +11,6 @@ let pinButtonIsPinned = false;
 //tags
 const tagInput = document.querySelector(".add-tag-input");
 const tagList = document.querySelector(".tag-list");
-
 
 //notes
 const noteList = document.querySelector(".notes");
@@ -26,6 +29,7 @@ searchButton.addEventListener("click", () => {
 });
 
 function applyData(data) {
+  console.log("apply", data);
   if (Array.isArray(data)) {
     updateTaskNumber(data.length);
     clearNoteList();
@@ -36,7 +40,10 @@ function applyData(data) {
     updateTaskNumber(data.noteList.length);
     clearTagList();
     clearNoteList();
-    tagsArr = data.tagList.slice(0);
+    data.tagList.slice().forEach(item => {  //копия JavaScript Array 
+      tagsMap.set(item.id, item)
+    });
+    
     data.tagList.map((tagItem) => {
       createTag(tagItem);
     });
@@ -63,8 +70,11 @@ function loadTagList() {
   fetch(url)
     .then((res) => res.json())
     .then((el) => {
-      tagsArr = el.slice(0);
+      el.slice().forEach(item => {
+        tagsMap.set(item.id, item)
+      });
       el.map((item) => {
+        
         createTag(item);
       });
     });
@@ -86,10 +96,10 @@ function createTag(tagItem) {
   tagDiv.setAttribute("class", "tag-item");
   const tagSpan = document.createElement("span");
   tagSpan.innerHTML = tagItem.name;
-  tagSpan.addEventListener("click", changeTagStatus.bind(null, tagItem.id)); 
-  if (tagItem.active) {
+  tagSpan.addEventListener("click", changeTagStatus.bind(null, tagItem.id));
+  if (tagItem.isActive) {
     tagDiv.classList.add("tag-item-active");
-  } 
+  }
 
   //delete tag button
   const deleteTagBtn = document.createElement("i");
@@ -138,9 +148,9 @@ function addTags() {
 }
 
 function deleteTag(tagId) {
-  const deleteTagId = tagId;
-  const url = `${ipAdress}/deleteTag?searchQuery=${searchInput.value}&id=${deleteTagId}`;
-
+  const url = `${ipAdress}/deleteTag?searchQuery=${searchInput.value}&id=${tagId}`;
+  tagsMap.delete(tagId);
+ 
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
@@ -215,6 +225,12 @@ function createNote(noteItem) {
   noteDescription.innerText = description;
   noteDescriptionDiv.appendChild(noteDescription);
   noteDiv.appendChild(noteDescriptionDiv);
+
+  // tags container
+  const noteTagDiv = document.createElement("div");
+  noteTagDiv.classList.add("note-tags");
+  noteTagDiv.innerHTML = "tags"; // temp
+  noteDiv.appendChild(noteTagDiv);
 
   //attach final note
   noteList.appendChild(noteDiv);

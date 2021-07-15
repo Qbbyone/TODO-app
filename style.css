@@ -326,6 +326,7 @@ main {
 
 .note-tags {
   display: flex;
+  flex-wrap: wrap;
   margin-bottom: 0.5rem;
 }
 

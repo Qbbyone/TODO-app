@@ -8,7 +8,7 @@ const noteTitleInput = document.querySelector(".add-title-input");
 const noteInput = document.querySelector(".add-note-input");
 
 const tagModalList = document.querySelector(".modal-tags-container");
-let tagsArr;
+const tagsMap = new Map();
 
 let method;
 
@@ -17,7 +17,6 @@ openModalButton.addEventListener("click", openModal.bind(null, null));
 overlay.addEventListener("click", closeModal);
 
 function openModal(data) {
-  console.log(data);
   if (data != null) {
     noteTitleInput.value = data.title;
     noteInput.value = data.description;
@@ -26,18 +25,18 @@ function openModal(data) {
       pinButtonIsPinned = true;
     }
     countChars(data.description.length);
-    
+
     data.tagsArray.forEach((el) => {
+      tagsMap.set(el.id, el);
       createModalTag(el);
     });
   } else {
     countChars(0);
-    console.log(tagsArr);
-    tagsArr.forEach((el) => {
+    tagsMap.forEach((el) => {
       createModalTag(el);
     });
   }
-  
+
   method = chooseButtonMethod.bind(null, data);
   addNoteButton.addEventListener("click", method);
 
@@ -65,7 +64,7 @@ function closeModal() {
   //clear inputs
   noteTitleInput.value = "";
   noteInput.value = "";
-  tagModalList.innerHTML = ""
+  tagModalList.innerHTML = "";
   //clear context
   pinButtonIsPinned = false;
   pinNoteButton.classList.remove("pin-active");
@@ -96,11 +95,20 @@ function pinNoteModal() {
 function createModalTag(tagItem) {
   const tagDiv = document.createElement("div");
   tagDiv.setAttribute("class", "tag-item");
+   if (tagItem.isActive) {
+    tagDiv.classList.add("tag-item-active");
+  } 
   const tagSpan = document.createElement("span");
   tagSpan.innerHTML = tagItem.name;
-  
-  
+
+  tagSpan.addEventListener("click", foo.bind(null, tagItem.id));
+
   tagDiv.appendChild(tagSpan);
   tagModalList.appendChild(tagDiv);
 }
 
+function foo(tagId) {
+  let tag = tagsMap.get(tagId);
+  tag.isActive = !tag.isActive;
+  console.log(tagsMap);
+}
