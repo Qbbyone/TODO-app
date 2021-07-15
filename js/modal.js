@@ -107,8 +107,6 @@ function createModalTag(tagItem) {
   tagModalList.appendChild(tagDiv);
 }
 
-function deleteModalTag() {}
-
 function foo(tagId) {
   let tag = tagsMap.get(tagId);
   tag.isActive = !tag.isActive;
