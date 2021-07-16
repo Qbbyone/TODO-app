@@ -1,8 +1,5 @@
 // Remote server
-//const ipAdress = "https://the-best-todoshnik.herokuapp.com";
-
-// local server
-const ipAdress = "http://192.168.0.103:8082";
+const ipAdress = "https://the-best-todoshnik.herokuapp.com";
 
 const token = "DLooBUSHZYOI5rnWgR_oOyX892cq5xZX";
 
