@@ -1,4 +1,4 @@
-// Remote server 
+// Remote server
 //const ipAdress = "https://the-best-todoshnik.herokuapp.com";
 
 // local server
@@ -40,12 +40,16 @@ function applyData(data) {
     updateTaskNumber(data.noteList.length);
     clearTagList();
     clearNoteList();
-    data.tagList.slice().forEach(item => {  //копия JavaScript Array 
-      tagsMap.set(item.id, item)
+    data.tagList.forEach((item) => {
+      //изолированная копия JavaScript Array
+      let itemCopy = new Object();
+      Object.assign(itemCopy, item);
+      itemCopy.isActive = false;
+      tagsMap.set(itemCopy.id, itemCopy);
     });
-    
+
     data.tagList.map((tagItem) => {
-      createTag(tagItem);
+      createDashboardTag(tagItem);
     });
     data.noteList.map((noteItem) => {
       createNote(noteItem);
@@ -70,12 +74,14 @@ function loadTagList() {
   fetch(url)
     .then((res) => res.json())
     .then((el) => {
-      el.slice().forEach(item => {
-        tagsMap.set(item.id, item)
+      el.forEach((item) => {
+        let itemCopy = new Object();
+        Object.assign(itemCopy, item);
+        itemCopy.isActive = false;
+        tagsMap.set(itemCopy.id, itemCopy);
       });
       el.map((item) => {
-        
-        createTag(item);
+        createDashboardTag(item);
       });
     });
 }
@@ -91,7 +97,7 @@ function loadNoteList() {
 
 //Tags
 
-function createTag(tagItem) {
+function createDashboardTag(tagItem) {
   const tagDiv = document.createElement("div");
   tagDiv.setAttribute("class", "tag-item");
   const tagSpan = document.createElement("span");
@@ -150,7 +156,7 @@ function addTags() {
 function deleteTag(tagId) {
   const url = `${ipAdress}/deleteTag?searchQuery=${searchInput.value}&id=${tagId}`;
   tagsMap.delete(tagId);
- 
+
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
@@ -227,10 +233,14 @@ function createNote(noteItem) {
   noteDiv.appendChild(noteDescriptionDiv);
 
   // tags container
-  const noteTagDiv = document.createElement("div");
-  noteTagDiv.classList.add("note-tags");
-  noteTagDiv.innerHTML = "tags"; // temp
-  noteDiv.appendChild(noteTagDiv);
+  const noteTagsDiv = document.createElement("div");
+  noteTagsDiv.classList.add("note-tags");
+ 
+  noteItem.tagsArray.forEach(el => {
+    if (el.isActive) createTag(el, noteTagsDiv)
+  })
+
+  noteDiv.appendChild(noteTagsDiv);
 
   //attach final note
   noteList.appendChild(noteDiv);
@@ -240,18 +250,34 @@ function clearNoteList() {
   noteList.innerHTML = "";
 }
 
-function addNote() {
+function submitNote(newNoteBody) {
   const noteTitle = noteTitleInput.value;
-  const noteDescription = noteInput.value;
-  const url = `${ipAdress}/addNote?searchQuery=${searchInput.value}`;
+  const noteDescription= noteInput.value;
+  
+  let method;
 
-  const noteBody = {
+  const activeTagsArray = []
+  
+  tagsMap.forEach((el) => {
+    if(el.isActive) activeTagsArray.push(el.id)
+  })
+  
+  let noteBody = {
     title: noteTitle,
     description: noteDescription,
     userToken: token,
     isPinned: pinButtonIsPinned,
-    activeTagsArray: [],
+    activeTagsArray,
   };
+
+  if(newNoteBody) {
+    method = 'editNote'
+    noteBody.id = newNoteBody.id 
+  } else {
+    method = 'addNote'
+  }
+  
+  const url = `${ipAdress}/${method}?searchQuery=${searchInput.value}`;
 
   fetch(url, {
     method: "POST",
@@ -285,32 +311,6 @@ function pinNote(pinId) {
     .then((data) => {
       applyData(data);
     });
-}
-
-// edit note
-
-function editNote(newNoteBody) {
-  console.log(newNoteBody);
-  const url = `${ipAdress}/editNote?searchQuery=${searchInput.value}`;
-
-  const newNote = {
-    id: newNoteBody.id,
-    title: noteTitleInput.value,
-    description: noteInput.value,
-    userToken: token,
-    activeTagsArray: [],
-    isPinned: pinButtonIsPinned,
-  };
-
-  fetch(url, {
-    method: "POST",
-    body: JSON.stringify(newNote),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      applyData(data);
-    });
-  closeModal();
 }
 
 // search

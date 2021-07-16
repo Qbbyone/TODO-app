@@ -28,12 +28,12 @@ function openModal(data) {
 
     data.tagsArray.forEach((el) => {
       tagsMap.set(el.id, el);
-      createModalTag(el);
+      createTag(el);
     });
   } else {
     countChars(0);
     tagsMap.forEach((el) => {
-      createModalTag(el);
+      createTag(el);
     });
   }
 
@@ -50,11 +50,7 @@ function chooseButtonMethod(data) {
     noteInput.value.length > 1 &&
     noteInput.value.length < 300
   ) {
-    if (data != null) {
-      editNote(data);
-    } else {
-      addNote();
-    }
+    submitNote(data);
   }
 }
 
@@ -67,6 +63,10 @@ function closeModal() {
   tagModalList.innerHTML = "";
   //clear context
   pinButtonIsPinned = false;
+  tagsMap.forEach((el) => {
+    el.isActive = false;
+  });
+
   pinNoteButton.classList.remove("pin-active");
   addNoteButton.removeEventListener("click", method);
 }
@@ -92,23 +92,34 @@ function pinNoteModal() {
   }
 }
 
-function createModalTag(tagItem) {
+function createTag(tagItem, noteTagsDiv) {
   const tagDiv = document.createElement("div");
   tagDiv.setAttribute("class", "tag-item");
-   if (tagItem.isActive) {
+  if (tagItem.isActive) {
     tagDiv.classList.add("tag-item-active");
-  } 
+  }
   const tagSpan = document.createElement("span");
   tagSpan.innerHTML = tagItem.name;
-
-  tagSpan.addEventListener("click", foo.bind(null, tagItem.id));
-
   tagDiv.appendChild(tagSpan);
-  tagModalList.appendChild(tagDiv);
+  if (noteTagsDiv) {
+    noteTagsDiv.appendChild(tagDiv);
+  } else {
+    tagSpan.addEventListener(
+      "click",
+      changeModalTagStatus.bind(null, tagItem.id)
+    );
+    tagModalList.appendChild(tagDiv);
+  }
+  
 }
 
-function foo(tagId) {
+function changeModalTagStatus(tagId) {
   let tag = tagsMap.get(tagId);
   tag.isActive = !tag.isActive;
-  console.log(tagsMap);
+  tagsMap.set(tagId, tag);
+  tagModalList.innerHTML = "";
+
+  tagsMap.forEach((el) => {
+    createTag(el);
+  });
 }

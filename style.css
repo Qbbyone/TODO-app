@@ -259,7 +259,7 @@ main {
 }
 
 .tag-item-active {
-  background: var(--clr-accent);
+  background:		#ffa700;
   border: none;
   
 }
