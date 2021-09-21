@@ -1,6 +1,8 @@
 // Remote server
-const ipAdress = "https://the-best-todoshnik.herokuapp.com";
+//const ipAdress = "https://the-best-todoshnik.herokuapp.com";
 
+// dev server
+const ipAdress = "http://localhost:5000/api";
 const token = "DLooBUSHZYOI5rnWgR_oOyX892cq5xZX";
 
 let pinButtonIsPinned = false;
@@ -22,7 +24,7 @@ const searchInput = document.querySelector(".search-input");
 const searchButton = document.querySelector(".search-btn");
 
 searchButton.addEventListener("click", () => {
-  searchInput.classList.toggle("hidden");
+  searchInput.classList.toggle("search-active");
 });
 
 function applyData(data) {
@@ -38,7 +40,7 @@ function applyData(data) {
     clearTagList();
     clearNoteList();
     data.tagList.forEach((item) => {
-      //изолированная копия JavaScript Array
+      //изолированная копия 
       let itemCopy = new Object();
       Object.assign(itemCopy, item);
       itemCopy.isActive = false;
@@ -71,7 +73,7 @@ function loadTagList() {
   fetch(url)
     .then((res) => res.json())
     .then((el) => {
-      el.forEach((item) => {
+      el.forEach((item) => {   
         let itemCopy = new Object();
         Object.assign(itemCopy, item);
         itemCopy.isActive = false;
@@ -84,7 +86,7 @@ function loadTagList() {
 }
 
 function loadNoteList() {
-  const url = `${ipAdress}/loadNoteList?token=${token}`;
+  const url = `${ipAdress}/loadNoteList?searchQuery=${searchInput.value}&token=${token}`;
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
@@ -141,6 +143,9 @@ function addTags() {
 
   fetch(url, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    }, 
     body: JSON.stringify(tagType),
   })
     .then((response) => response.json())
@@ -267,6 +272,8 @@ function submitNote(newNoteBody) {
     activeTagsArray,
   };
 
+  console.log(newNoteBody);
+
   if(newNoteBody) {
     method = 'editNote'
     noteBody.id = newNoteBody.id 
@@ -278,6 +285,9 @@ function submitNote(newNoteBody) {
 
   fetch(url, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(noteBody),
   })
     .then((response) => response.json())
@@ -299,7 +309,6 @@ function deleteNote(deleteId) {
 }
 
 // pin note
-
 function pinNote(pinId) {
   const pinItemId = pinId;
   const url = `${ipAdress}/pinNote?searchQuery=${searchInput.value}&id=${pinItemId}`;
